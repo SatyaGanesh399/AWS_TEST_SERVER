@@ -30,6 +30,7 @@ app.listen(PORT, () => {
   console.log(`server listerning at ${PORT}`)
 })
 
+// Base route for checking
 app.get("/", (req, res) => {
   res.send({
     status: 200,
@@ -38,7 +39,6 @@ app.get("/", (req, res) => {
 })
 
 // file store in uploads using multer
-// console.log(__dirname + "/uploads")
 let Storage = multer.diskStorage({
   destination: "uploads",
   filename: function (req, file, cb) {
@@ -47,6 +47,8 @@ let Storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: Storage })
+
+// utility function
 
 const mailSend = async (body, fileName) => {
   let { message, email, phoneNumber, name } = body
@@ -87,6 +89,9 @@ const mailSend = async (body, fileName) => {
       .catch((error) => reject(error))
   })
 }
+
+// utility function
+
 const mailSubscription = async (text) => {
   return new Promise(async (resolve, reject) => {
     let transporter = nodemailer.createTransport({
@@ -111,7 +116,9 @@ const mailSubscription = async (text) => {
   })
 }
 
-const conatctUs = async ({ name, email, subject, message }) => {
+// Utility function
+
+const contactUs = async ({ name, email, subject, message }) => {
   return new Promise(async (resolve, reject) => {
     let transporter = nodemailer.createTransport({
       service: "gmail",
@@ -134,6 +141,8 @@ const conatctUs = async ({ name, email, subject, message }) => {
       .catch((error) => reject(error))
   })
 }
+
+// Utility function
 const jobApplication = async (body, applicationName) => {
   const {
     jobPosition,
@@ -177,6 +186,8 @@ const jobApplication = async (body, applicationName) => {
       .catch((error) => reject(error))
   })
 }
+
+// Spontaneous Application route
 
 app.post("/sendmail", upload.single("cv"), (req, res) => {
   const { name, email, phoneNumber, message } = req.body
@@ -230,6 +241,8 @@ app.post("/sendmail", upload.single("cv"), (req, res) => {
   }
 })
 
+// news letter submission route
+
 app.post("/newsletter", (req, res) => {
   if (req.body.email == "" || !validator.isEmail(req.body.email)) {
     return res.send({
@@ -246,6 +259,8 @@ app.post("/newsletter", (req, res) => {
     })
   }
 })
+
+// job application submission route
 
 app.post("/submitapplication", upload.single("application"), (req, res) => {
   const application = req.file
@@ -274,6 +289,8 @@ app.post("/submitapplication", upload.single("application"), (req, res) => {
   }
 })
 
+// Contact us route
+
 app.post("/contactus", (req, res) => {
   const { name, email, subject, message } = req.body
   if (!validator.isEmail(email)) {
@@ -289,7 +306,7 @@ app.post("/contactus", (req, res) => {
     })
   }
   try {
-    conatctUs(req.body)
+    contactUs(req.body)
     return res.send({
       status: 200,
       message: "Contact form sent successfully",
